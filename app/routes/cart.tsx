@@ -71,6 +71,20 @@ export async function action({request, context}: ActionFunctionArgs) {
       result = await cart.updateBuyerIdentity({
         ...inputs.buyerIdentity,
       });
+      // If caller passed attribute updates alongside buyer identity, apply them too
+      const attributes = Array.isArray((inputs as any).attributes)
+        ? ((inputs as any).attributes as Array<{key: string; value: string}>)
+        : undefined;
+      if (attributes) {
+        result = await cart.updateAttributes(attributes);
+      }
+      break;
+    }
+    case CartForm.ACTIONS.AttributesUpdateInput: {
+      const attributes = Array.isArray((inputs as any).attributes)
+        ? ((inputs as any).attributes as Array<{key: string; value: string}>)
+        : [];
+      result = await cart.updateAttributes(attributes);
       break;
     }
     default:
@@ -107,6 +121,7 @@ export async function loader({context}: LoaderFunctionArgs) {
 
 export default function Cart() {
   const cart = useLoaderData<typeof loader>();
+  console.log(cart);
 
   return (
     <div className="cart">

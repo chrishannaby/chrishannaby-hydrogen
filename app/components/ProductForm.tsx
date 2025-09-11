@@ -5,15 +5,18 @@ import type {
   ProductOptionValueSwatch,
 } from '@shopify/hydrogen/storefront-api-types';
 import {AddToCartButton} from './AddToCartButton';
+import {PickupLocationSelector} from './PickupLocationSelector';
 import {useAside} from './Aside';
 import type {ProductFragment} from 'storefrontapi.generated';
 
 export function ProductForm({
   productOptions,
   selectedVariant,
+  pickupLocations = [],
 }: {
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
+  pickupLocations?: Array<{id: string; label: string}>;
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
@@ -120,6 +123,11 @@ export function ProductForm({
       >
         {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
       </AddToCartButton>
+      <br />
+      <PickupLocationSelector
+        locations={pickupLocations}
+        title="Pickup location"
+      />
     </div>
   );
 }

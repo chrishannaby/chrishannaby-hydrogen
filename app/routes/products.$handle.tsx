@@ -63,8 +63,23 @@ async function loadCriticalData({
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
+  // Derive pickup locations from the selected variant's store availability
+  const pickupLocations =
+    (product?.selectedOrFirstAvailableVariant as any)?.storeAvailability?.nodes
+      ?.filter((node: any) => node?.available)
+      ?.map((node: any) => {
+        const name = node?.location?.name || 'Location';
+        const city = node?.location?.address?.city || '';
+        const label = city ? `${name} — ${city}` : name;
+        return {
+          id: node?.location?.id as string,
+          label,
+        };
+      }) ?? [];
+
   return {
     product,
+    pickupLocations,
   };
 }
 
@@ -81,7 +96,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, pickupLocations} = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -114,6 +129,7 @@ export default function Product() {
         <ProductForm
           productOptions={productOptions}
           selectedVariant={selectedVariant}
+          pickupLocations={pickupLocations}
         />
         <br />
         <br />
@@ -176,6 +192,21 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
     unitPrice {
       amount
       currencyCode
+    }
+    storeAvailability(first: 50) {
+      nodes {
+        available
+        pickUpTime
+        quantityAvailable
+        location {
+          id
+          name
+          address {
+            city
+            formatted
+          }
+        }
+      }
     }
   }
 ` as const;
