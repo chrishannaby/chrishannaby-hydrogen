@@ -17,11 +17,31 @@ type PickupLocation = {
 export function PickupLocationSelector({
   locations,
   title = 'Pickup location',
+  selectedId: controlledSelectedId,
 }: {
   locations: PickupLocation[];
   title?: string;
+  selectedId?: string;
 }) {
-  const [selectedId, setSelectedId] = React.useState<string>('');
+  const initialSelectedId = React.useMemo(() => {
+    return controlledSelectedId &&
+      locations.some((l) => l.id === controlledSelectedId)
+      ? controlledSelectedId
+      : (controlledSelectedId ?? '');
+  }, [controlledSelectedId, locations]);
+
+  const [selectedId, setSelectedId] = React.useState<string>(initialSelectedId);
+
+  React.useEffect(() => {
+    setSelectedId(initialSelectedId);
+  }, [initialSelectedId]);
+
+  const options = React.useMemo(() => {
+    if (selectedId && !locations.some((l) => l.id === selectedId)) {
+      return [{id: selectedId, label: 'Saved pickup location'}, ...locations];
+    }
+    return locations;
+  }, [locations, selectedId]);
 
   const disabled = locations.length === 0;
 
@@ -50,10 +70,6 @@ export function PickupLocationSelector({
                   },
                 },
               },
-          // Update a cart attribute to mirror the checkout preference
-          attributes: selectedId
-            ? [{key: 'deliveryMethod', value: 'PICK_UP'}]
-            : [{key: 'deliveryMethod', value: ''}],
         }}
       >
         {(fetcher) => (
@@ -64,23 +80,48 @@ export function PickupLocationSelector({
             <select
               id="pickup-location-select"
               value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
+              onChange={(e) => {
+                const newId = e.target.value;
+                setSelectedId(newId);
+                const handleToSave = newId.replace(
+                  /^gid:\/\/shopify\/Location\//,
+                  '',
+                );
+                const payload = {
+                  action: CartForm.ACTIONS.BuyerIdentityUpdate,
+                  inputs: {
+                    buyerIdentity: newId
+                      ? {
+                          preferences: {
+                            delivery: {
+                              pickupHandle: [handleToSave],
+                              deliveryMethod: ['PICK_UP'],
+                            },
+                          },
+                        }
+                      : {
+                          preferences: {
+                            delivery: {
+                              pickupHandle: [],
+                              deliveryMethod: ['SHIPPING'],
+                            },
+                          },
+                        },
+                  },
+                } as const;
+                const formData = new FormData();
+                formData.append('cartFormInput', JSON.stringify(payload));
+                fetcher.submit(formData, {method: 'POST', action: '/cart'});
+              }}
               disabled={disabled || fetcher.state !== 'idle'}
             >
               <option value="">No preference</option>
-              {locations.map((location) => (
+              {options.map((location) => (
                 <option value={location.id} key={location.id}>
                   {location.label}
                 </option>
               ))}
             </select>
-            <button
-              type="submit"
-              disabled={disabled || fetcher.state !== 'idle'}
-              style={{marginLeft: 8}}
-            >
-              Save
-            </button>
           </div>
         )}
       </CartForm>

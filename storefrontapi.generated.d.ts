@@ -746,6 +746,18 @@ export type ProductVariantFragment = Pick<
   unitPrice?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
   >;
+  storeAvailability: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.StoreAvailability,
+        'available' | 'pickUpTime' | 'quantityAvailable'
+      > & {
+        location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+          address: Pick<StorefrontAPI.LocationAddress, 'city' | 'formatted'>;
+        };
+      }
+    >;
+  };
 };
 
 export type ProductFragment = Pick<
@@ -785,6 +797,21 @@ export type ProductFragment = Pick<
               unitPrice?: StorefrontAPI.Maybe<
                 Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
               >;
+              storeAvailability: {
+                nodes: Array<
+                  Pick<
+                    StorefrontAPI.StoreAvailability,
+                    'available' | 'pickUpTime' | 'quantityAvailable'
+                  > & {
+                    location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+                      address: Pick<
+                        StorefrontAPI.LocationAddress,
+                        'city' | 'formatted'
+                      >;
+                    };
+                  }
+                >;
+              };
             }
           >;
           swatch?: StorefrontAPI.Maybe<
@@ -822,6 +849,21 @@ export type ProductFragment = Pick<
       unitPrice?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
       >;
+      storeAvailability: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.StoreAvailability,
+            'available' | 'pickUpTime' | 'quantityAvailable'
+          > & {
+            location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+              address: Pick<
+                StorefrontAPI.LocationAddress,
+                'city' | 'formatted'
+              >;
+            };
+          }
+        >;
+      };
     }
   >;
   adjacentVariants: Array<
@@ -846,6 +888,21 @@ export type ProductFragment = Pick<
       unitPrice?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
       >;
+      storeAvailability: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.StoreAvailability,
+            'available' | 'pickUpTime' | 'quantityAvailable'
+          > & {
+            location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+              address: Pick<
+                StorefrontAPI.LocationAddress,
+                'city' | 'formatted'
+              >;
+            };
+          }
+        >;
+      };
     }
   >;
   seo: Pick<StorefrontAPI.Seo, 'description' | 'title'>;
@@ -899,6 +956,24 @@ export type ProductQuery = {
                   unitPrice?: StorefrontAPI.Maybe<
                     Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
                   >;
+                  storeAvailability: {
+                    nodes: Array<
+                      Pick<
+                        StorefrontAPI.StoreAvailability,
+                        'available' | 'pickUpTime' | 'quantityAvailable'
+                      > & {
+                        location: Pick<
+                          StorefrontAPI.Location,
+                          'id' | 'name'
+                        > & {
+                          address: Pick<
+                            StorefrontAPI.LocationAddress,
+                            'city' | 'formatted'
+                          >;
+                        };
+                      }
+                    >;
+                  };
                 }
               >;
               swatch?: StorefrontAPI.Maybe<
@@ -936,6 +1011,21 @@ export type ProductQuery = {
           unitPrice?: StorefrontAPI.Maybe<
             Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
           >;
+          storeAvailability: {
+            nodes: Array<
+              Pick<
+                StorefrontAPI.StoreAvailability,
+                'available' | 'pickUpTime' | 'quantityAvailable'
+              > & {
+                location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+                  address: Pick<
+                    StorefrontAPI.LocationAddress,
+                    'city' | 'formatted'
+                  >;
+                };
+              }
+            >;
+          };
         }
       >;
       adjacentVariants: Array<
@@ -960,6 +1050,21 @@ export type ProductQuery = {
           unitPrice?: StorefrontAPI.Maybe<
             Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
           >;
+          storeAvailability: {
+            nodes: Array<
+              Pick<
+                StorefrontAPI.StoreAvailability,
+                'available' | 'pickUpTime' | 'quantityAvailable'
+              > & {
+                location: Pick<StorefrontAPI.Location, 'id' | 'name'> & {
+                  address: Pick<
+                    StorefrontAPI.LocationAddress,
+                    'city' | 'formatted'
+                  >;
+                };
+              }
+            >;
+          };
         }
       >;
       seo: Pick<StorefrontAPI.Seo, 'description' | 'title'>;
@@ -1242,7 +1347,7 @@ interface GeneratedQueryTypes {
     return: PoliciesQuery;
     variables: PoliciesQueryVariables;
   };
-  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    encodedVariantExistence\n    encodedVariantAvailability\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
+  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    encodedVariantExistence\n    encodedVariantAvailability\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n    storeAvailability(first: 50) {\n      nodes {\n        available\n        pickUpTime\n        quantityAvailable\n        location {\n          id\n          name\n          address {\n            city\n            formatted\n          }\n        }\n      }\n    }\n  }\n\n\n': {
     return: ProductQuery;
     variables: ProductQueryVariables;
   };

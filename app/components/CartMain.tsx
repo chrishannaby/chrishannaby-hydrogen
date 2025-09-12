@@ -30,6 +30,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 
   return (
     <div className={className}>
+      <pre>{JSON.stringify(cart.buyerIdentity, null, 2)}</pre>
       <CartEmpty hidden={linesCount} layout={layout} />
       <div className="cart-details">
         <div aria-labelledby="cart-lines">

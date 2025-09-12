@@ -43,17 +43,18 @@ async function loadCriticalData({
   request,
 }: LoaderFunctionArgs) {
   const {handle} = params;
-  const {storefront} = context;
+  const {storefront, cart} = context;
 
   if (!handle) {
     throw new Error('Expected product handle to be defined');
   }
 
-  const [{product}] = await Promise.all([
+  const [{product}, currentCart] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
-    // Add other queries here, so that they are loaded in parallel
+    // Load the cart in parallel so we can prefill the pickup selection
+    cart.get(),
   ]);
 
   if (!product?.id) {
@@ -71,15 +72,19 @@ async function loadCriticalData({
         const name = node?.location?.name || 'Location';
         const city = node?.location?.address?.city || '';
         const label = city ? `${name} — ${city}` : name;
-        return {
-          id: node?.location?.id as string,
-          label,
-        };
+        const rawId = String(node?.location?.id || '');
+        const id = rawId.replace(/^gid:\/\/shopify\/Location\//, '');
+        return {id, label};
       }) ?? [];
+
+  const selectedPickupHandle =
+    (currentCart as any)?.buyerIdentity?.preferences?.delivery
+      ?.pickupHandle?.[0] || '';
 
   return {
     product,
     pickupLocations,
+    selectedPickupHandle,
   };
 }
 
@@ -96,7 +101,8 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const {product, pickupLocations} = useLoaderData<typeof loader>();
+  const {product, pickupLocations, selectedPickupHandle} =
+    useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -130,6 +136,7 @@ export default function Product() {
           productOptions={productOptions}
           selectedVariant={selectedVariant}
           pickupLocations={pickupLocations}
+          selectedPickupHandle={selectedPickupHandle}
         />
         <br />
         <br />

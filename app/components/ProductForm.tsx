@@ -13,10 +13,12 @@ export function ProductForm({
   productOptions,
   selectedVariant,
   pickupLocations = [],
+  selectedPickupHandle,
 }: {
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
   pickupLocations?: Array<{id: string; label: string}>;
+  selectedPickupHandle?: string;
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
@@ -127,6 +129,7 @@ export function ProductForm({
       <PickupLocationSelector
         locations={pickupLocations}
         title="Pickup location"
+        selectedId={selectedPickupHandle}
       />
     </div>
   );

@@ -127,6 +127,12 @@ export const CART_QUERY_FRAGMENT = `#graphql
       }
       email
       phone
+      preferences {
+        delivery {
+          deliveryMethod
+          pickupHandle
+        }
+      }
     }
     lines(first: $numCartLines) {
       nodes {
