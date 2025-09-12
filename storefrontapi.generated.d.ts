@@ -87,6 +87,14 @@ export type CartApiQueryFragment = Pick<
         'id' | 'email' | 'firstName' | 'lastName' | 'displayName'
       >
     >;
+    preferences?: StorefrontAPI.Maybe<{
+      delivery?: StorefrontAPI.Maybe<
+        Pick<
+          StorefrontAPI.CartDeliveryPreference,
+          'deliveryMethod' | 'pickupHandle'
+        >
+      >;
+    }>;
   };
   lines: {
     nodes: Array<

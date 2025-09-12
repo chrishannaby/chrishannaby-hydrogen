@@ -102,7 +102,7 @@ export function PickupLocationSelector({
                       : {
                           preferences: {
                             delivery: {
-                              pickupHandle: [],
+                              pickupHandle: null,
                               deliveryMethod: ['SHIPPING'],
                             },
                           },
